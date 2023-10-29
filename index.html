@@ -291,8 +291,13 @@
         var volumes=document.getElementById("volume");
         speechSynthesis.addEventListener("voiceschanged",()=>{
             choices=speechSynthesis.getVoices();
-            console.log(choices);
+            if(choices.length==0){
+                document.getElementById("text").innerText="Sorry Failed to Load Sounds";
+            }
+            else{
+                console.log(choices);
             addLanguages(choices);
+            }
         })
         function addLanguages(ret_choice){
             for(let i=0;i<ret_choice.length;i++){
