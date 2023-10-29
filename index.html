@@ -287,13 +287,15 @@
         </div>
     </div>
     <script>
-        var utterence;
+        async function main(){
+            var utterence;
         var choices;
         var play_button=document.getElementById("textarea");
         var languages=document.getElementById("language");
         var speeds=document.getElementById("speed");
         var volumes=document.getElementById("volume");
-        speechSynthesis.addEventListener("voiceschanged",()=>{
+        await speechSynthesis.addEventListener("voiceschanged",()=>{
+            // call_possible();
             choices=speechSynthesis.getVoices();
             console.log(choices);
             addLanguages(choices);
@@ -325,6 +327,8 @@
                 play_sound();
             }
         })
+        }
+        main()
     </script>
 </body>
 </html>
