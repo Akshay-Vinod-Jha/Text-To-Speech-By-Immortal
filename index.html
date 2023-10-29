@@ -247,6 +247,7 @@
                 height: 50%;
             }
             #part2{
+                justify-content: space-evenly;
                 height: 45%;
             }
             #part2 #same{
@@ -270,7 +271,7 @@
                 <textarea name="textarea" id="textarea" cols="30" rows="10" placeholder="Enter Your Text Here....."></textarea>
             </div>
             <div id="part2">
-                <div id="same"><p id="lang_label">Select Language<i class="fa-solid fa-language fa-bounce" style="color: #edeff3;"></i></p><select name="language" id="language"></select></div>
+                <!-- <div id="same"><p id="lang_label"></p><select name="language" id="language"></select></div> -->
                 <div id="same"><p id="speed_label">Manage Speed<i class="fa-solid fa-gauge fa-beat"></i></p><input type="range" name="speed" id="speed" min="0" max="10" value="1"></div>
                 <div id="same"><p id="volume_label">Manage Volume<i class="fa-solid fa-volume-high fa-shake" style="color: #f7f9fd;"></i></p><input type="range" name="volume" id="volume" min="0" max="10" value="10"></div>
             </div>
@@ -287,17 +288,18 @@
         </div>
     </div>
     <script>
-        async function main(){
-            var utterence;
-        var choices;
+        var flag=0;
+        var utterence;
+        var choices=[];
         var play_button=document.getElementById("textarea");
-        var languages=document.getElementById("language");
+        var languages;
         var speeds=document.getElementById("speed");
         var volumes=document.getElementById("volume");
-        await speechSynthesis.addEventListener("voiceschanged",()=>{
-            // call_possible();
+        speechSynthesis.addEventListener("voiceschanged",()=>{
             choices=speechSynthesis.getVoices();
+            lets();
             console.log(choices);
+            languages=document.getElementById("language");
             addLanguages(choices);
         })
         function addLanguages(ret_choice){
@@ -310,7 +312,19 @@
             }
         }
         function play_sound(){
-            utterence=new SpeechSynthesisUtterance(document.getElementById("textarea").value);
+            if(choices.length==0){
+                if ('speechSynthesis' in window) {
+                    var synth = window.speechSynthesis;
+                    var utterance = new SpeechSynthesisUtterance();
+                    utterance.text = document.getElementById("textarea").value;
+                    utterance.rate = parseInt(speeds.value); // Speed of speech, 1 is normal speed
+                    utterance.pitch = 1; // Pitch, 1 is normal pitch
+                    utterance.volume=parseInt(volumes.value)/10;
+                    synth.speak(utterance);
+                }
+            }
+            else{
+                utterence=new SpeechSynthesisUtterance(document.getElementById("textarea").value);
             utterence.lang=languages.value;
             choices.forEach((element)=>{
                 if(element.name==languages.value){
@@ -321,14 +335,30 @@
             utterence.pitch=1;
             utterence.volume=parseInt(volumes.value)/10;
             speechSynthesis.speak(utterence);
+            }
                 }
         play_button.addEventListener("keypress",function(event){
             if(event.key==="Enter"){
                 play_sound();
             }
         })
+        function lets(){
+            if(flag==0){
+                let div=document.createElement("div");
+            div.setAttribute("id","same");
+            let p=document.createElement("p");
+            p.setAttribute("id","lang_label");
+            p.innerHTML='Select Language<i class="fa-solid fa-language fa-bounce" style="color: #edeff3;"></i>';
+            let select=document.createElement("select");
+            select.setAttribute("name","language");
+            select.setAttribute("id","language");
+            div.append(p);
+            div.append(select);
+            document.getElementById("part2").prepend(div);
+            flag=1;
+            }
         }
-        main()
+        play_sound();
     </script>
 </body>
 </html>
